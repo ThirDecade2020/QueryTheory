@@ -15,6 +15,14 @@ state = json.loads(STATE_PATH.read_text())
 # — Load practice dataset —
 df = pd.read_csv("Fruit-Prices-2022.csv")
 
+# — Normalize CamelCase headers → snake_case so SQL templates match —
+df.columns = (
+    df.columns
+      .str.replace(r'([a-z0-9])([A-Z])', r'\1_\2', regex=True)  # e.g. RetailPrice → Retail_Price
+      .str.replace(r'\s+', '_', regex=True)                      # spaces → underscores
+      .str.lower()                                               # lowercase all
+)
+
 # — Initialize session state —
 st.session_state.setdefault("sql", "")
 st.session_state.setdefault("last_result", None)
@@ -73,9 +81,9 @@ if st.button("Discover Mathematical Underpinnings"):
                 "  retail_price REAL,\n"
                 "  retail_price_unit TEXT,\n"
                 "  yield REAL,\n"
-                "  cup_equiv_size REAL,\n"
-                "  cup_equiv_unit TEXT,\n"
-                "  cup_equiv_price REAL\n"
+                "  cup_equivalent_size REAL,\n"
+                "  cup_equivalent_unit TEXT,\n"
+                "  cup_equivalent_price REAL\n"
                 ")"
             )
             system_msg = {
