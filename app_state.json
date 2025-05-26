@@ -1,55 +1,155 @@
 {
   "templates": [
-    "SELECT * FROM fruit_prices_2022 LIMIT 5;",
-    "SELECT fruit, form FROM fruit_prices_2022;",
-    "SELECT DISTINCT form FROM fruit_prices_2022;",
-    "SELECT COUNT(*) AS total_records FROM fruit_prices_2022;",
-    "SELECT fruit, COUNT(*) AS freq FROM fruit_prices_2022 GROUP BY fruit;",
-    "SELECT form, AVG(retail_price) AS avg_price FROM fruit_prices_2022 GROUP BY form;",
-    "SELECT form, SUM(cup_equiv_price) AS total_cup_price FROM fruit_prices_2022 GROUP BY form;",
-    "SELECT form, MIN(retail_price) AS min_price FROM fruit_prices_2022 GROUP BY form;",
-    "SELECT form, MAX(retail_price) AS max_price FROM fruit_prices_2022 GROUP BY form;",
-    "SELECT fruit, retail_price FROM fruit_prices_2022 WHERE retail_price > 2.0;",
-    "SELECT fruit, retail_price FROM fruit_prices_2022 WHERE retail_price BETWEEN 1.0 AND 3.0;",
-    "SELECT fruit FROM fruit_prices_2022 WHERE form IN ('Fresh','Canned');",
-    "SELECT * FROM fruit_prices_2022 WHERE fruit LIKE 'A%';",
-    "SELECT * FROM fruit_prices_2022 WHERE LOWER(fruit) = 'apples';",
-    "SELECT fruit, CAST(retail_price AS INTEGER) FROM fruit_prices_2022;",
-    "SELECT fruit, ROUND(retail_price,2) FROM fruit_prices_2022;",
-    "SELECT fruit, (retail_price / yield) AS price_per_yield FROM fruit_prices_2022;",
-    "SELECT fruit, ROW_NUMBER() OVER (ORDER BY retail_price DESC) AS rn FROM fruit_prices_2022;",
-    "SELECT fruit, RANK() OVER (PARTITION BY form ORDER BY retail_price DESC) AS form_rank FROM fruit_prices_2022;",
-    "SELECT fruit, DENSE_RANK() OVER (ORDER BY cup_equiv_price ASC) AS dr FROM fruit_prices_2022;",
-    "SELECT fruit, NTILE(4) OVER (ORDER BY retail_price) AS quartile FROM fruit_prices_2022;",
-    "SELECT fruit, LAG(retail_price) OVER (ORDER BY retail_price) AS prev_price FROM fruit_prices_2022;",
-    "SELECT fruit, LEAD(retail_price) OVER (ORDER BY retail_price) AS next_price FROM fruit_prices_2022;",
-    "SELECT fruit, FIRST_VALUE(retail_price) OVER (ORDER BY fruit) AS first_price FROM fruit_prices_2022;",
-    "SELECT fruit, LAST_VALUE(retail_price) OVER (ORDER BY fruit ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_price FROM fruit_prices_2022;",
-    "SELECT fruit FROM fruit_prices_2022 WHERE retail_price = (SELECT MAX(retail_price) FROM fruit_prices_2022);",
-    "SELECT fruit FROM fruit_prices_2022 WHERE retail_price = (SELECT MIN(retail_price) FROM fruit_prices_2022);",
-    "SELECT * FROM fruit_prices_2022 WHERE fruit IN (SELECT fruit FROM fruit_prices_2022 WHERE retail_price > 3.0);",
-    "SELECT fruit FROM fruit_prices_2022 WHERE EXISTS (SELECT 1 FROM fruit_prices_2022 WHERE cup_equiv_size > 1.0 AND fruit = fruit_prices_2022.fruit);",
-    "WITH cte AS (SELECT fruit, retail_price FROM fruit_prices_2022 ORDER BY retail_price DESC LIMIT 3) SELECT * FROM cte;",
-    "SELECT fruit FROM fruit_prices_2022 UNION SELECT form FROM fruit_prices_2022;",
-    "SELECT fruit FROM fruit_prices_2022 UNION ALL SELECT form FROM fruit_prices_2022;",
-    "SELECT fruit FROM fruit_prices_2022 INTERSECT SELECT form FROM fruit_prices_2022;",
-    "SELECT fruit FROM fruit_prices_2022 EXCEPT SELECT form FROM fruit_prices_2022;",
-    "SELECT * FROM fruit_prices_2022 ORDER BY retail_price ASC LIMIT 10;",
-    "SELECT * FROM fruit_prices_2022 ORDER BY retail_price DESC LIMIT 10;",
-    "SELECT * FROM fruit_prices_2022 ORDER BY fruit ASC, retail_price DESC LIMIT 5;",
-    "SELECT fruit, COUNT(*) OVER (PARTITION BY form) AS cnt_form FROM fruit_prices_2022;",
-    "SELECT AVG(retail_price) OVER () AS overall_avg FROM fruit_prices_2022;",
-    "SELECT form, AVG(retail_price) OVER (PARTITION BY form) AS avg_per_form FROM fruit_prices_2022;",
-    "SELECT fruit, LEAD(retail_price,2) OVER (ORDER BY retail_price) FROM fruit_prices_2022;",
-    "SELECT fruit, LAG(cup_equiv_price,1,0) OVER (ORDER BY cup_equiv_price) FROM fruit_prices_2022;",
-    "SELECT DISTINCT SUBSTR(fruit,1,3) AS prefix FROM fruit_prices_2022;",
-    "SELECT fruit, LENGTH(fruit) AS name_length FROM fruit_prices_2022;",
-    "SELECT fruit, LOWER(fruit) AS lower_name FROM fruit_prices_2022;",
-    "SELECT fruit, UPPER(fruit) AS upper_name FROM fruit_prices_2022;",
-    "SELECT fruit, TRIM(fruit) FROM fruit_prices_2022;",
-    "SELECT fruit, COALESCE(retail_price,0) AS price_no_null FROM fruit_prices_2022;",
-    "SELECT * FROM fruit_prices_2022 WHERE retail_price_unit IS NOT NULL;",
-    "SELECT * FROM fruit_prices_2022 WHERE cup_equivalent_unit IS NULL;"
+    { "label": "Preview first 5 rows",
+      "sql":   "SELECT * FROM fruit_prices_2022 LIMIT 5;" },
+
+    { "label": "List fruit and form columns",
+      "sql":   "SELECT fruit, form FROM fruit_prices_2022;" },
+
+    { "label": "Show distinct forms",
+      "sql":   "SELECT DISTINCT form FROM fruit_prices_2022;" },
+
+    { "label": "Count total records",
+      "sql":   "SELECT COUNT(*) AS total_records FROM fruit_prices_2022;" },
+
+    { "label": "Frequency of each fruit",
+      "sql":   "SELECT fruit, COUNT(*) AS freq FROM fruit_prices_2022 GROUP BY fruit;" },
+
+    { "label": "Average retail price by form",
+      "sql":   "SELECT form, AVG(retail_price) AS avg_price FROM fruit_prices_2022 GROUP BY form;" },
+
+    { "label": "Total cup-equivalent price by form",
+      "sql":   "SELECT form, SUM(cup_equiv_price) AS total_cup_price FROM fruit_prices_2022 GROUP BY form;" },
+
+    { "label": "Minimum retail price by form",
+      "sql":   "SELECT form, MIN(retail_price) AS min_price FROM fruit_prices_2022 GROUP BY form;" },
+
+    { "label": "Maximum retail price by form",
+      "sql":   "SELECT form, MAX(retail_price) AS max_price FROM fruit_prices_2022 GROUP BY form;" },
+
+    { "label": "Fruits with retail price > $2",
+      "sql":   "SELECT fruit, retail_price FROM fruit_prices_2022 WHERE retail_price > 2.0;" },
+
+    { "label": "Fruits priced between $1 and $3",
+      "sql":   "SELECT fruit, retail_price FROM fruit_prices_2022 WHERE retail_price BETWEEN 1.0 AND 3.0;" },
+
+    { "label": "Fruits that are Fresh or Canned",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 WHERE form IN ('Fresh','Canned');" },
+
+    { "label": "Fruits starting with ‘A’",
+      "sql":   "SELECT * FROM fruit_prices_2022 WHERE fruit LIKE 'A%';" },
+
+    { "label": "Rows where fruit is exactly ‘apples’",
+      "sql":   "SELECT * FROM fruit_prices_2022 WHERE LOWER(fruit) = 'apples';" },
+
+    { "label": "Cast retail price to integer",
+      "sql":   "SELECT fruit, CAST(retail_price AS INTEGER) FROM fruit_prices_2022;" },
+
+    { "label": "Round retail price to 2 decimals",
+      "sql":   "SELECT fruit, ROUND(retail_price,2) FROM fruit_prices_2022;" },
+
+    { "label": "Price per yield unit",
+      "sql":   "SELECT fruit, (retail_price / yield) AS price_per_yield FROM fruit_prices_2022;" },
+
+    { "label": "Row number by highest price",
+      "sql":   "SELECT fruit, ROW_NUMBER() OVER (ORDER BY retail_price DESC) AS rn FROM fruit_prices_2022;" },
+
+    { "label": "Rank within each form by price",
+      "sql":   "SELECT fruit, RANK() OVER (PARTITION BY form ORDER BY retail_price DESC) AS form_rank FROM fruit_prices_2022;" },
+
+    { "label": "Dense rank by cup-equiv price",
+      "sql":   "SELECT fruit, DENSE_RANK() OVER (ORDER BY cup_equiv_price ASC) AS dr FROM fruit_prices_2022;" },
+
+    { "label": "Price quartiles (NTILE 4)",
+      "sql":   "SELECT fruit, NTILE(4) OVER (ORDER BY retail_price) AS quartile FROM fruit_prices_2022;" },
+
+    { "label": "Previous price (LAG)",
+      "sql":   "SELECT fruit, LAG(retail_price) OVER (ORDER BY retail_price) AS prev_price FROM fruit_prices_2022;" },
+
+    { "label": "Next price (LEAD)",
+      "sql":   "SELECT fruit, LEAD(retail_price) OVER (ORDER BY retail_price) AS next_price FROM fruit_prices_2022;" },
+
+    { "label": "First retail price value",
+      "sql":   "SELECT fruit, FIRST_VALUE(retail_price) OVER (ORDER BY fruit) AS first_price FROM fruit_prices_2022;" },
+
+    { "label": "Last retail price value",
+      "sql":   "SELECT fruit, LAST_VALUE(retail_price) OVER (ORDER BY fruit ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_price FROM fruit_prices_2022;" },
+
+    { "label": "Fruit(s) with max retail price",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 WHERE retail_price = (SELECT MAX(retail_price) FROM fruit_prices_2022);" },
+
+    { "label": "Fruit(s) with min retail price",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 WHERE retail_price = (SELECT MIN(retail_price) FROM fruit_prices_2022);" },
+
+    { "label": "Rows where fruit price > $3 (subquery)",
+      "sql":   "SELECT * FROM fruit_prices_2022 WHERE fruit IN (SELECT fruit FROM fruit_prices_2022 WHERE retail_price > 3.0);" },
+
+    { "label": "Fruits with cup size > 1.0 (EXISTS)",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 WHERE EXISTS (SELECT 1 FROM fruit_prices_2022 WHERE cup_equiv_size > 1.0 AND fruit = fruit_prices_2022.fruit);" },
+
+    { "label": "Top-3 most expensive fruits (CTE)",
+      "sql":   "WITH cte AS (SELECT fruit, retail_price FROM fruit_prices_2022 ORDER BY retail_price DESC LIMIT 3) SELECT * FROM cte;" },
+
+    { "label": "Union of fruit names and forms",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 UNION SELECT form FROM fruit_prices_2022;" },
+
+    { "label": "Union ALL fruit names and forms",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 UNION ALL SELECT form FROM fruit_prices_2022;" },
+
+    { "label": "Intersection of fruit names and forms",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 INTERSECT SELECT form FROM fruit_prices_2022;" },
+
+    { "label": "Fruits not also form names (EXCEPT)",
+      "sql":   "SELECT fruit FROM fruit_prices_2022 EXCEPT SELECT form FROM fruit_prices_2022;" },
+
+    { "label": "10 cheapest rows",
+      "sql":   "SELECT * FROM fruit_prices_2022 ORDER BY retail_price ASC LIMIT 10;" },
+
+    { "label": "10 most expensive rows",
+      "sql":   "SELECT * FROM fruit_prices_2022 ORDER BY retail_price DESC LIMIT 10;" },
+
+    { "label": "Top 5 rows by fruit asc / price desc",
+      "sql":   "SELECT * FROM fruit_prices_2022 ORDER BY fruit ASC, retail_price DESC LIMIT 5;" },
+
+    { "label": "Count per form (window)",
+      "sql":   "SELECT fruit, COUNT(*) OVER (PARTITION BY form) AS cnt_form FROM fruit_prices_2022;" },
+
+    { "label": "Overall average retail price",
+      "sql":   "SELECT AVG(retail_price) OVER () AS overall_avg FROM fruit_prices_2022;" },
+
+    { "label": "Average price per form (window)",
+      "sql":   "SELECT form, AVG(retail_price) OVER (PARTITION BY form) AS avg_per_form FROM fruit_prices_2022;" },
+
+    { "label": "Lead price 2 rows ahead",
+      "sql":   "SELECT fruit, LEAD(retail_price,2) OVER (ORDER BY retail_price) FROM fruit_prices_2022;" },
+
+    { "label": "Lag cup-equiv price with default 0",
+      "sql":   "SELECT fruit, LAG(cup_equiv_price,1,0) OVER (ORDER BY cup_equiv_price) FROM fruit_prices_2022;" },
+
+    { "label": "First 3-letter prefix of fruit names",
+      "sql":   "SELECT DISTINCT SUBSTR(fruit,1,3) AS prefix FROM fruit_prices_2022;" },
+
+    { "label": "Length of each fruit name",
+      "sql":   "SELECT fruit, LENGTH(fruit) AS name_length FROM fruit_prices_2022;" },
+
+    { "label": "Lowercase fruit names",
+      "sql":   "SELECT fruit, LOWER(fruit) AS lower_name FROM fruit_prices_2022;" },
+
+    { "label": "Uppercase fruit names",
+      "sql":   "SELECT fruit, UPPER(fruit) AS upper_name FROM fruit_prices_2022;" },
+
+    { "label": "Trimmed fruit names",
+      "sql":   "SELECT fruit, TRIM(fruit) FROM fruit_prices_2022;" },
+
+    { "label": "Coalesce price nulls to 0",
+      "sql":   "SELECT fruit, COALESCE(retail_price,0) AS price_no_null FROM fruit_prices_2022;" },
+
+    { "label": "Rows where price unit is NOT NULL",
+      "sql":   "SELECT * FROM fruit_prices_2022 WHERE retail_price_unit IS NOT NULL;" },
+
+    { "label": "Rows where cup unit IS NULL",
+      "sql":   "SELECT * FROM fruit_prices_2022 WHERE cup_equivalent_unit IS NULL;" }
   ],
   "history": []
 }
+

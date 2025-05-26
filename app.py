@@ -30,9 +30,9 @@ st.session_state.setdefault("chat_history", [])
 
 # — Sidebar: template picker —
 st.sidebar.header("Query Templates")
-for template in state["templates"]:
-    if st.sidebar.button(template):
-        st.session_state["sql"] = template
+for tpl in state["templates"]:
+    if st.sidebar.button(tpl["label"]):
+        st.session_state["sql"] = tpl["sql"]
 
 # — Main UI —
 st.title("QueryTheory")
