@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import duckdb
 import openai
+import re
 
 # — Load OpenAI key from Streamlit secrets —
 openai.api_key = st.secrets["openai"]["api_key"]
@@ -104,31 +105,62 @@ if st.button("Discover Mathematical Underpinnings"):
                 "  cup_equivalent_price REAL\n"
                 ")"
             )
-            system_msg = {
+            
+            # 1. Get LaTeX math expression
+            system_msg_math = {
                 "role": "system",
                 "content": (
                     "You are an expert in relational algebra and set theory as applied to SQL. "
-                    "Given a SQL query and its schema, provide:\n"
-                    "1. The equivalent relational-algebra expression.\n"
-                    "2. A step-by-step explanation of each operator in set-theoretic terms.\n"
-                    "Be concise and math-focused."
+                    "Given a SQL query and its schema, provide only the equivalent relational-algebra expression in LaTeX math. "
+                    "Do NOT explain, do NOT wrap in markdown. Output only the LaTeX code."
                 )
             }
-            user_msg = {
+            user_msg_math = {
                 "role": "user",
                 "content": f"Schema:\n{schema}\n\nSQL:\n{st.session_state['sql']}"
             }
-            resp = openai.chat.completions.create(
+            resp_math = openai.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=[system_msg, user_msg]
+                messages=[system_msg_math, user_msg_math]
             )
-            explanation = resp.choices[0].message.content
+            latex_math = resp_math.choices[0].message.content.strip()
+            latex_math = re.sub(r"^```(?:latex)?\s*", "", latex_math)
+            latex_math = re.sub(r"\s*```$", "", latex_math)
 
-        st.session_state["chat_history"] = [
-            system_msg,
-            user_msg,
-            {"role": "assistant", "content": explanation},
-        ]
+            # 2. Get plain English explanation only (NO raw math in response)
+            system_msg_exp = {
+                "role": "system",
+                "content": (
+                    "You are an expert in relational algebra and set theory as applied to SQL. "
+                    "Given a SQL query and its schema, explain in clear plain English how the query maps to relational algebra and set theory, step by step. "
+                    "Do NOT include the LaTeX or raw relational-algebra expression. Only explain in words."
+                )
+            }
+            user_msg_exp = {
+                "role": "user",
+                "content": f"Schema:\n{schema}\n\nSQL:\n{st.session_state['sql']}"
+            }
+            resp_exp = openai.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[system_msg_exp, user_msg_exp]
+            )
+            explanation = resp_exp.choices[0].message.content.strip()
+        
+        # Show the schema and SQL
+        st.success(f"Schema:\n{schema}\n\nSQL: {st.session_state['sql']}")
+
+        # Show the LaTeX math, rendered as math
+        st.markdown("#### Mathematical Expression Equivalent:")
+        st.latex(latex_math)
+        st.markdown("_Legend: π = projection, σ = selection, ⋈ = join, × = cross product_", unsafe_allow_html=True)
+
+        # Show the explanation in plain English
+        st.markdown("**Step-by-step explanation:**")
+        st.info(explanation)
+
+        if "chat_history" not in st.session_state:
+            st.session_state["chat_history"] = []
+
     except Exception as e:
         st.error(f"Error generating explanation:\n{e}")
 
