@@ -46,13 +46,30 @@ with st.expander("View raw dataset"):
 
 # — SQL Editor —
 st.subheader("SQL Editor")
-sql = st.text_area(
+
+# Show the selected query as a faint reference above the editor
+if st.session_state["sql"]:
+    st.markdown(
+        "<div style='color:#999;font-size:14px;'>Type this query for practice:</div>"
+        f"<div style='color:#bbb;font-family:monospace;font-size:14px;padding:4px 0 8px 0;'>{st.session_state['sql']}</div>",
+        unsafe_allow_html=True
+    )
+
+# Insert Query Example button
+if st.session_state["sql"] and st.button("Insert Query Example"):
+    st.session_state["sql_editor"] = st.session_state["sql"]
+    st.rerun()
+
+# Initialize the editor's session state if not present
+if "sql_editor" not in st.session_state:
+    st.session_state["sql_editor"] = ""
+
+# The editor uses only session state
+user_sql = st.text_area(
     "Edit your SQL here",
-    value=st.session_state["sql"],
+    key="sql_editor",
     height=200,
-    key="sql_editor"
 )
-st.session_state["sql"] = sql
 
 # — Run button and persist results —
 if st.button("Run Query"):
