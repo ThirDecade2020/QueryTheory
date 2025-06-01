@@ -31,7 +31,8 @@ st.session_state.setdefault("chat_history", [])
 # — Sidebar: template picker —
 st.sidebar.header("Query Templates")
 for tpl in state["templates"]:
-    if st.sidebar.button(tpl["label"]):
+    tooltip = f'SQL: {tpl["sql"]}\nCategory: {tpl["category"]}'
+    if st.sidebar.button(tpl["label"], help=tooltip):
         st.session_state["sql"] = tpl["sql"]
 
 # — Main UI —
