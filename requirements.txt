@@ -1,0 +1,7 @@
+streamlit
+duckdb
+openai
+pandas
+numpy
+# …and any other libraries you import
+
